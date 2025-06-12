@@ -2,6 +2,7 @@
 #include <chrono>
 #include <queue>
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <optional>
 
@@ -18,14 +19,18 @@ struct Order
 
 class OrderBook
 {
-	std::map<double, std::queue<Order>, std::greater<double>> _buyOrders;
-	std::map<double, std::queue<Order>> _sellOrders;
-	std::string instrument = "";
 public:
 	void AddOrder(const Order& val);
-	std::optional<Order> getBestMatch(OrderSide side, double price);
+	std::optional<Order*> GetBestMatch(OrderSide side, double price);
 	bool ExecuteOrder();
 	void ModifyOrder(int id, double val);
-	void RemoveOrder(int id);
-	std::string GetInstrumentName() { return instrument; }
+	void RemoveOrder(Order order);
+	void RemoveOrder(uint64_t orderId);
+	std::string GetInstrumentName() { return _instrument; }
+
+private:
+	std::map<double, std::queue<Order>, std::greater<double>> _buyOrders;
+	std::map<double, std::queue<Order>> _sellOrders;
+	std::unordered_map<uint64_t, std::pair<OrderSide, double>> _orderIndex;
+	std::string _instrument = "";
 };

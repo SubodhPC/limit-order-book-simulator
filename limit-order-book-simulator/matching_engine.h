@@ -10,6 +10,6 @@ public:
 
 private:
 	OrderBook& _orderBook;
-	void ExecuteOrder(Order& order, Order& price);
+	void ExecuteOrder(Order& order, Order* price);
 };
 
