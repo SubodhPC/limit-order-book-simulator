@@ -2,19 +2,38 @@
 //
 
 #include <iostream>
+#include "src/matching_engine.h"
+#include <thread>
+#include <chrono>
+
+void simulateClient(MatchingEngine& engine, int clientId, int numOrders) {
+    for (int i = 0; i < numOrders; ++i) {
+        Order order;
+        order.id = clientId * 1000 + i;
+        order.side = (i % 2 == 0) ? OrderSide::BUY : OrderSide::SELL;
+        order.price = 95 + rand() % 11; // $95 to $105
+        order.quantity = 10 + rand() % 91;
+        order.timestamp = std::chrono::steady_clock::now();
+
+        engine.SubmitOrder(order);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+}
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    OrderBook book;
+    MatchingEngine engine(book);
+
+    //engine.start();
+
+    std::vector<std::thread> clients;
+    for (int i = 0; i < 4; ++i) {
+        clients.emplace_back(simulateClient, std::ref(engine), i, 10);
+    }
+
+    for (auto& t : clients) t.join();
+
+    //engine.stopEngine();
+    return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

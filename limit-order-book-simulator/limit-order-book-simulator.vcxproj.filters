@@ -21,15 +21,15 @@
     <ClCompile Include="src\order_book.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="matching_engine.cpp">
+    <ClCompile Include="src\matching_engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="matching_engine.h">
+    <ClInclude Include="src\order_book.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\order_book.h">
+    <ClInclude Include="src\matching_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

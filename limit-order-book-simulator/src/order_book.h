@@ -24,11 +24,14 @@ public:
 	std::optional<Order*> GetBestMatch(OrderSide side, double price);
 	bool ExecuteOrder();
 	void ModifyOrder(int id, double val);
-	void RemoveOrder(Order order);
-	void RemoveOrder(uint64_t orderId);
+	void RemoveOrder(Order& order);
+	void RemoveOrder(uint64_t& orderId);
 	std::string GetInstrumentName() { return _instrument; }
 
 private:
+	void RemoveBuyOrder(uint64_t& orderId, double price);
+	void RemoveSellOrder(uint64_t& orderId, double price);
+
 	std::map<double, std::queue<Order>, std::greater<double>> _buyOrders;
 	std::map<double, std::queue<Order>> _sellOrders;
 	std::unordered_map<uint64_t, std::pair<OrderSide, double>> _orderIndex;

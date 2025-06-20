@@ -36,12 +36,12 @@ std::optional<Order*> OrderBook::GetBestMatch(OrderSide side, double price)
 	return std::nullopt;
 }
 
-void OrderBook::RemoveOrder(Order orderToRemove)  
+void OrderBook::RemoveOrder(Order& orderToRemove)  
 {  
     RemoveOrder(orderToRemove.id);
 }
 
-void OrderBook::RemoveOrder(uint64_t orderId)
+void OrderBook::RemoveOrder(uint64_t& orderId)
 {
     auto it = _orderIndex.find(orderId);
     if (it == _orderIndex.end()) {
@@ -51,20 +51,14 @@ void OrderBook::RemoveOrder(uint64_t orderId)
     OrderSide side = it->second.first;
     double price = it->second.second;
 
-    std::map<double, std::queue<Order>>* orders = nullptr;
-    if (side == OrderSide::BUY)
-    {
-        orders = reinterpret_cast<std::map<double, std::queue<Order>>*>(&_buyOrders);
-    }
-    else
-    {
-        orders = &_sellOrders;
-    }
+    side == OrderSide::BUY ? RemoveBuyOrder(orderId, price) : RemoveSellOrder(orderId, price);
+}
 
-    auto mapIt = orders->find(price);
-
-    if (mapIt == orders->end() || mapIt->second.empty()) 
-    {
+void OrderBook::RemoveBuyOrder(uint64_t& orderId, double price)
+{
+    auto& orders = _buyOrders;
+    auto mapIt = orders.find(price);
+    if (mapIt == orders.end()) {
         // Order in orderindex but not in order book
         _orderIndex.erase(orderId);
         return;
@@ -82,7 +76,38 @@ void OrderBook::RemoveOrder(uint64_t orderId)
     }
 
     if (newQueue.empty()) {
-        orders->erase(mapIt); // remove price level entirely
+        orders.erase(mapIt); // remove price level entirely
+    }
+    else {
+        mapIt->second = std::move(newQueue);
+    }
+
+    _orderIndex.erase(orderId);
+}
+
+void OrderBook::RemoveSellOrder(uint64_t& orderId, double price)
+{
+    auto& orders = _sellOrders;
+    auto mapIt = orders.find(price);
+    if (mapIt == orders.end()) {
+        // Order in orderindex but not in order book
+        _orderIndex.erase(orderId);
+        return;
+    }
+
+    std::queue<Order>& q = mapIt->second;
+    std::queue<Order> newQueue;
+
+    // Rebuild queue without the target order
+    while (!q.empty()) {
+        Order o = q.front(); q.pop();
+        if (o.id != orderId) {
+            newQueue.push(o);
+        }
+    }
+
+    if (newQueue.empty()) {
+        orders.erase(mapIt); // remove price level entirely
     }
     else {
         mapIt->second = std::move(newQueue);
