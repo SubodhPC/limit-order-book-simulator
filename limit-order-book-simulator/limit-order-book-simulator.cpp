@@ -22,7 +22,7 @@ void simulateClient(MatchingEngine& engine, int clientId, int numOrders) {
 
 int main()
 {
-    OrderBook book;
+    OrderBook book("OSSM");
     MatchingEngine engine(book);
 
     //engine.start();

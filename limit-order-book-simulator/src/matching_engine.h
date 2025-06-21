@@ -9,7 +9,8 @@ public:
 	void CancelOrder(uint64_t order);
 
 private:
-	OrderBook& _orderBook;
 	void ExecuteOrder(Order& order, Order* price);
+
+	OrderBook& _orderBook;
 };
 

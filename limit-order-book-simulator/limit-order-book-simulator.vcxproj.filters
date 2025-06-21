@@ -32,5 +32,8 @@
     <ClInclude Include="src\matching_engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\thread_safe_queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

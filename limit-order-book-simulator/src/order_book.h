@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <string>
 #include <optional>
+#include "thread_safe_queue.h"
 
 enum class OrderSide { BUY, SELL };
 
@@ -20,6 +21,7 @@ struct Order
 class OrderBook
 {
 public:
+	OrderBook(std::string instrument) : _instrument(instrument) {}
 	void AddOrder(const Order& val);
 	std::optional<Order*> GetBestMatch(OrderSide side, double price);
 	bool ExecuteOrder();
@@ -32,8 +34,8 @@ private:
 	void RemoveBuyOrder(uint64_t& orderId, double price);
 	void RemoveSellOrder(uint64_t& orderId, double price);
 
-	std::map<double, std::queue<Order>, std::greater<double>> _buyOrders;
-	std::map<double, std::queue<Order>> _sellOrders;
+	std::map<double, ThreadSafeQueue<Order>, std::greater<double>> _buyOrders;
+	std::map<double, ThreadSafeQueue<Order>> _sellOrders;
 	std::unordered_map<uint64_t, std::pair<OrderSide, double>> _orderIndex;
 	std::string _instrument = "";
 };
