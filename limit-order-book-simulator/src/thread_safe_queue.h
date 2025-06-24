@@ -8,13 +8,13 @@ class ThreadSafeQueue {
 private:
     std::queue<T> queue;
     mutable std::shared_mutex mtx; // Ensure mtx is mutable for const methods
-    std::condition_variable cv;
+    //std::condition_variable_any cv;
 
 public:
     void push(const T& value) {
         std::unique_lock<std::shared_mutex> lock(mtx);
         queue.push(value);
-        cv.notify_one();
+        //cv.notify_one();
     }
 
     /*T waitAndPop() {
